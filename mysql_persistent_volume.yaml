@@ -38,8 +38,8 @@ spec:
     storage: 20Gi
   hostPath:
     path: /resourcesmanagement
-    
-    ---
+
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
