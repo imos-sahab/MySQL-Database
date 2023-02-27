@@ -10,7 +10,7 @@ spec:
     port: 3306
     targetPort: 3306
   type: ClusterIP
-  clusterIP: None ## headless service
+  clusterIP: None # headless service
 ---
 apiVersion: apps/v1
 kind: StatefulSet
