@@ -464,3 +464,80 @@ Learn more about debugging a StatefulSet.
 Learn more about deleting a StatefulSet.
 Learn more about force deleting StatefulSet Pods.
 Look in the Helm Charts repository for other stateful application examples.
+  
+  
+  Scale a StatefulSet
+This task shows how to scale a StatefulSet. Scaling a StatefulSet refers to increasing or decreasing the number of replicas.
+
+Before you begin
+StatefulSets are only available in Kubernetes version 1.5 or later. To check your version of Kubernetes, run kubectl version.
+
+Not all stateful applications scale nicely. If you are unsure about whether to scale your StatefulSets, see StatefulSet concepts or StatefulSet tutorial for further information.
+
+You should perform scaling only when you are confident that your stateful application cluster is completely healthy.
+
+Scaling StatefulSets
+Use kubectl to scale StatefulSets
+First, find the StatefulSet you want to scale.
+
+kubectl get statefulsets <stateful-set-name>
+Change the number of replicas of your StatefulSet:
+
+kubectl scale statefulsets <stateful-set-name> --replicas=<new-replicas>
+Make in-place updates on your StatefulSets
+Alternatively, you can do in-place updates on your StatefulSets.
+
+If your StatefulSet was initially created with kubectl apply, update .spec.replicas of the StatefulSet manifests, and then do a kubectl apply:
+
+kubectl apply -f <stateful-set-file-updated>
+Otherwise, edit that field with kubectl edit:
+
+kubectl edit statefulsets <stateful-set-name>
+Or use kubectl patch:
+
+kubectl patch statefulsets <stateful-set-name> -p '{"spec":{"replicas":<new-replicas>}}'
+Troubleshooting
+Scaling down does not work right
+You cannot scale down a StatefulSet when any of the stateful Pods it manages is unhealthy. Scaling down only takes place after those stateful Pods become running and ready.
+
+If spec.replicas > 1, Kubernetes cannot determine the reason for an unhealthy Pod. It might be the result of a permanent fault or of a transient fault. A transient fault can be caused by a restart required by upgrading or maintenance.
+
+If the Pod is unhealthy due to a permanent fault, scaling without correcting the fault may lead to a state where the StatefulSet membership drops below a certain minimum number of replicas that are needed to function correctly. This may cause your StatefulSet to become unavailable.
+
+If the Pod is unhealthy due to a transient fault and the Pod might become available again, the transient error may interfere with your scale-up or scale-down operation. Some distributed databases have issues when nodes join and leave at the same time. It is better to reason about scaling operations at the application level in these cases, and perform scaling only when you are sure that your stateful application cluster is completely healthy.
+  
+  
+  Delete a StatefulSet
+This task shows you how to delete a StatefulSet.
+
+Before you begin
+This task assumes you have an application running on your cluster represented by a StatefulSet.
+Deleting a StatefulSet
+You can delete a StatefulSet in the same way you delete other resources in Kubernetes: use the kubectl delete command, and specify the StatefulSet either by file or by name.
+
+kubectl delete -f <file.yaml>
+kubectl delete statefulsets <statefulset-name>
+You may need to delete the associated headless service separately after the StatefulSet itself is deleted.
+
+kubectl delete service <service-name>
+When deleting a StatefulSet through kubectl, the StatefulSet scales down to 0. All Pods that are part of this workload are also deleted. If you want to delete only the StatefulSet and not the Pods, use --cascade=orphan. For example:
+
+kubectl delete -f <file.yaml> --cascade=orphan
+By passing --cascade=orphan to kubectl delete, the Pods managed by the StatefulSet are left behind even after the StatefulSet object itself is deleted. If the pods have a label app.kubernetes.io/name=MyApp, you can then delete them as follows:
+
+kubectl delete pods -l app.kubernetes.io/name=MyApp
+Persistent Volumes
+Deleting the Pods in a StatefulSet will not delete the associated volumes. This is to ensure that you have the chance to copy data off the volume before deleting it. Deleting the PVC after the pods have terminated might trigger deletion of the backing Persistent Volumes depending on the storage class and reclaim policy. You should never assume ability to access a volume after claim deletion.
+
+Note: Use caution when deleting a PVC, as it may lead to data loss.
+Complete deletion of a StatefulSet
+To delete everything in a StatefulSet, including the associated pods, you can run a series of commands similar to the following:
+
+grace=$(kubectl get pods <stateful-set-pod> --template '{{.spec.terminationGracePeriodSeconds}}')
+kubectl delete statefulset -l app.kubernetes.io/name=MyApp
+sleep $grace
+kubectl delete pvc -l app.kubernetes.io/name=MyApp
+In the example above, the Pods have the label app.kubernetes.io/name=MyApp; substitute your own label as appropriate.
+
+Force deletion of StatefulSet pods
+If you find that some pods in your StatefulSet are stuck in the 'Terminating' or 'Unknown' states for an extended period of time, you may need to manually intervene to forcefully delete the pods from the apiserver. This is a potentially dangerous task. Refer to Force Delete StatefulSet Pods for details.
