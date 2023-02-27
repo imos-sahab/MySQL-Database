@@ -23,8 +23,8 @@ spec:
     matchLabels:
       app: mysql
   persistentVolumeClaimRetentionPolicy:
-    whenDeleted: Retain # Retain
-    whenScaled: Retain
+    whenDeleted: delete # Retain
+    whenScaled: delete
   template:
     metadata:
       labels:
