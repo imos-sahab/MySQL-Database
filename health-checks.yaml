@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   labels:
     test: health-check
-  name: my-application
+  name: mysql
 ...
 spec:
   containers:
