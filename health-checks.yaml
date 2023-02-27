@@ -7,57 +7,9 @@ metadata:
 ...
 spec:
   containers:
-  - name: goproxy-app 
+  - name: mysql
     args:
-    image: k8s.gcr.io/goproxy:0.1 
-    readinessProbe: 
-      exec: 
-        command: 
-        - cat
-        - /tmp/healthy
-...
-
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    test: health-check
-  name: my-application
-...
-spec:
-  containers:
-  - name: goproxy-app 
-    args:
-    image: k8s.gcr.io/goproxy:0.1 
-    livenessProbe: 
-      httpGet: 
-        scheme: HTTPS 
-        path: /healthz
-        port: 8080 
-        httpHeaders:
-        - name: X-Custom-Header
-          value: Awesome
-    startupProbe: 
-      httpGet: 
-        path: /healthz
-        port: 8080 
-      failureThreshold: 30 
-      periodSeconds: 10 
-
-...
-
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    test: health-check
-  name: my-application
-...
-spec:
-  containers:
-  - name: goproxy-app 
-    args:
-    image: k8s.gcr.io/goproxy:0.1 
+    image: mysql:5.7
     livenessProbe: 
       exec: 
         command: 
@@ -96,37 +48,3 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 3
-...
-
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    test: health-check
-  name: my-application
-spec:
-  containers:
-  - name: my-container 
-    args:
-    image: k8s.gcr.io/goproxy:0.1 
-    livenessProbe: 
-      tcpSocket:  
-        port: 8080 
-      initialDelaySeconds: 15 
-      periodSeconds: 20 
-      timeoutSeconds: 10 
-    readinessProbe: 
-      httpGet: 
-        host: my-host 
-        scheme: HTTPS 
-        path: /healthz
-        port: 8080 
-    startupProbe: 
-      exec: 
-        command: 
-        - cat
-        - /tmp/healthy
-      failureThreshold: 30 
-      periodSeconds: 20 
-      timeoutSeconds: 10 
-      
