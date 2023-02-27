@@ -24,7 +24,7 @@ spec:
       app: mysql
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: delete # Retain
-    whenScaled: delete
+    whenScaled: retain
   template:
     metadata:
       labels:
