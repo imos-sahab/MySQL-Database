@@ -24,12 +24,13 @@ spec:
       app: mysql
   persistentVolumeClaimRetentionPolicy:
     whenDeleted: delete # Retain
-    whenScaled: retain
+    whenScaled: delete
   template:
     metadata:
       labels:
         app: mysql
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
       - name: mysql
         image: mysql:5.7
