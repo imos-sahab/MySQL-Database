@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+  type: ClusterIP
+  clusterIP: None # headless service
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysqldb-aiems
+spec:
+  serviceName: mysql-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain # Retain
+    whenScaled: Retain
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      terminationGracePeriodSeconds: 30
+        fsGroup: 10001
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - containerPort: 3306
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "@Aa123456789"
+        - name: MSSQL_PID
+          value: "Developer"
+        volumeMounts:
+        - name: mysql-store
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: managed-csi # default
