@@ -5,7 +5,6 @@ metadata:
   labels:
     test: health-check
   name: mysql
-...
 spec:
   containers:
   - name: mysql
