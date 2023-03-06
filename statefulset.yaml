@@ -5,7 +5,7 @@ metadata:
   namespace: ai-ems-dev
 type: opaque
 stringData:
-  MYSQL_USER_PASSWORD: admin
+  MYSQL_USER_NAME: admin
   MYSQL_ROOT_PASSWORD: pasmsQlaiems
 
 ---
@@ -61,10 +61,15 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         env:
+          - name: MYSQL_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: MYSQL_USER_NAME
           - name: MYSQL_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: mysql-password
+                name: mysql-pass
                 key: MYSQL_ROOT_PASSWORD
   volumeClaimTemplates:
   - metadata:
