@@ -7,7 +7,7 @@ spec:
     - ReadWriteOnce
   storageClassName: manual
   capacity:
-    storage: 5Gi
+    storage: 50Gi
   hostPath:
     path: /mysql1
 
@@ -21,7 +21,7 @@ spec:
     - ReadWriteOnce
   storageClassName: manual
   capacity:
-    storage: 5Gi
+    storage: 50Gi
   hostPath:
     path: /mysql2
 
@@ -35,6 +35,6 @@ spec:
     - ReadWriteOnce
   storageClassName: manual
   capacity:
-    storage: 5Gi
+    storage: 50Gi
   hostPath:
     path: /mysql3
