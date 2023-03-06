@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mysql-password
+  name: mysql-pass
 type: opaque
 stringData:
-  MYSQL_ROOT_PASSWORD: pasmsQlaiems
+  MYSQL_USER: root
+  MYSQL_PASSWORD: pasmsQlaiems
 
 ---
 apiVersion: v1
@@ -47,11 +48,10 @@ spec:
         - name: mysql-store
           mountPath: /var/lib/mysql
         env:
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mysql-password
-                key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          value: "mysql-pass"
+        - name: MYSQL_PASSWORD
+          value: "mysql-pass"
   volumeClaimTemplates:
   - metadata:
       name: mysql-store
